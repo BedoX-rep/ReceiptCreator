@@ -109,6 +109,14 @@ export default function NewReceipt() {
   };
 
   const calculateTotals = () => {
+    if (items.length === 0) {
+      form.setValue("subtotal", 0);
+      form.setValue("total", 0);
+      form.setValue("balanceDue", 0);
+      form.setValue("items", []);
+      return;
+    }
+
     const subtotal = items.reduce((sum, item) => sum + item.total, 0);
     const discount = Number(form.getValues("discount")) || 0;
     const numericalDiscount = Number(form.getValues("numericalDiscount")) || 0;
