@@ -19,9 +19,9 @@ export const receipts = pgTable("receipts", {
   leftEye: jsonb("left_eye").notNull(),
   items: jsonb("items").notNull(),
   subtotal: numeric("subtotal", { precision: 10, scale: 2 }).notNull(),
-  discount: numeric("discount", { precision: 5, scale: 2 }).notNull(),
-  numericalDiscount: numeric("numerical_discount", { precision: 10, scale: 2 }).notNull(),
-  advancePayment: numeric("advance_payment", { precision: 10, scale: 2 }).notNull(),
+  discount: numeric("discount", { precision: 5, scale: 2 }).default("0").notNull(),
+  numericalDiscount: numeric("numerical_discount", { precision: 10, scale: 2 }).default("0").notNull(),
+  advancePayment: numeric("advance_payment", { precision: 10, scale: 2 }).default("0").notNull(),
   total: numeric("total", { precision: 10, scale: 2 }).notNull(),
   balanceDue: numeric("balance_due", { precision: 10, scale: 2 }).notNull()
 });
@@ -31,7 +31,14 @@ export const insertProductSchema = createInsertSchema(products, {
   price: z.number().min(0, "Price must be positive")
 }).omit({ id: true });
 
-export const insertReceiptSchema = createInsertSchema(receipts).omit({ id: true });
+export const insertReceiptSchema = createInsertSchema(receipts, {
+  discount: z.number().min(0).max(100).default(0),
+  numericalDiscount: z.number().min(0).default(0),
+  advancePayment: z.number().min(0).default(0),
+  subtotal: z.number().min(0),
+  total: z.number().min(0),
+  balanceDue: z.number().min(0)
+}).omit({ id: true });
 
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;

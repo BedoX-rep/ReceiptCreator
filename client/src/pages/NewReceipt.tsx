@@ -112,8 +112,11 @@ export default function NewReceipt() {
     const numericalDiscount = Number(form.getValues("numericalDiscount")) || 0;
     const advancePayment = Number(form.getValues("advancePayment")) || 0;
 
-    const total = subtotal * (1 - discount / 100) - numericalDiscount;
-    const balanceDue = total - advancePayment;
+    // Calculate total after percentage discount
+    const afterDiscount = subtotal * (1 - discount / 100);
+    // Apply additional numerical discount
+    const total = Math.max(0, afterDiscount - numericalDiscount);
+    const balanceDue = Math.max(0, total - advancePayment);
 
     form.setValue("subtotal", subtotal);
     form.setValue("total", total);
@@ -327,6 +330,33 @@ export default function NewReceipt() {
                   ))}
                 </TableBody>
               </Table>
+              <div className="mt-4 space-y-2 text-right">
+                <p className="text-lg">
+                  Subtotal: ${form.watch("subtotal").toFixed(2)}
+                </p>
+                {form.watch("discount") > 0 && (
+                  <p className="text-lg text-muted-foreground">
+                    After {form.watch("discount")}% Discount: $
+                    {(form.watch("subtotal") * (1 - form.watch("discount") / 100)).toFixed(2)}
+                  </p>
+                )}
+                {form.watch("numericalDiscount") > 0 && (
+                  <p className="text-lg text-muted-foreground">
+                    Additional Discount: ${form.watch("numericalDiscount").toFixed(2)}
+                  </p>
+                )}
+                <p className="text-xl font-bold">
+                  Total: ${form.watch("total").toFixed(2)}
+                </p>
+                {form.watch("advancePayment") > 0 && (
+                  <p className="text-lg text-muted-foreground">
+                    Advance Payment: ${form.watch("advancePayment").toFixed(2)}
+                  </p>
+                )}
+                <p className="text-lg font-semibold">
+                  Balance Due: ${form.watch("balanceDue").toFixed(2)}
+                </p>
+              </div>
             </CardContent>
           </Card>
 
