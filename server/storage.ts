@@ -19,15 +19,14 @@ export class JSONStorage implements IStorage {
   private receiptId: number = 1;
 
   constructor() {
-    this.productsPath = path.join(process.cwd(), 'data', 'products.json');
-    this.receiptsPath = path.join(process.cwd(), 'data', 'receipts.json');
+    this.productsPath = path.join(process.cwd(), 'attached_assets', 'products.json');
+    this.receiptsPath = path.join(process.cwd(), 'attached_assets', 'receipts.json');
     this.initializeStorage();
   }
 
   private async initializeStorage() {
     try {
-      await fs.mkdir(path.join(process.cwd(), 'data'), { recursive: true });
-      await this.ensureFile(this.productsPath);
+      // No need to create directory since files are in attached_assets
       await this.ensureFile(this.receiptsPath);
     } catch (error) {
       console.error('Failed to initialize storage:', error);
@@ -44,7 +43,12 @@ export class JSONStorage implements IStorage {
 
   async getProducts(): Promise<Product[]> {
     const data = await fs.readFile(this.productsPath, 'utf-8');
-    return JSON.parse(data);
+    const products = JSON.parse(data);
+    return products.map((p: any, index: number) => ({
+      ...p,
+      id: index + 1,
+      price: Number(p.price)
+    }));
   }
 
   async saveProduct(product: InsertProduct): Promise<Product> {
@@ -59,7 +63,7 @@ export class JSONStorage implements IStorage {
     const products = await this.getProducts();
     const index = products.findIndex(p => p.id === id);
     if (index === -1) throw new Error('Product not found');
-    
+
     const updatedProduct = { ...product, id } as Product;
     products[index] = updatedProduct;
     await fs.writeFile(this.productsPath, JSON.stringify(products));

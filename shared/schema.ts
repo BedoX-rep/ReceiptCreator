@@ -26,7 +26,11 @@ export const receipts = pgTable("receipts", {
   balanceDue: numeric("balance_due", { precision: 10, scale: 2 }).notNull()
 });
 
-export const insertProductSchema = createInsertSchema(products).omit({ id: true });
+export const insertProductSchema = createInsertSchema(products, {
+  name: z.string().min(1, "Product name is required"),
+  price: z.number().min(0, "Price must be positive")
+}).omit({ id: true });
+
 export const insertReceiptSchema = createInsertSchema(receipts).omit({ id: true });
 
 export type Product = typeof products.$inferSelect;
