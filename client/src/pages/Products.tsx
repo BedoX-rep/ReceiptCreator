@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { type Product, insertProductSchema } from "@shared/schema";
+import { type Product, type InsertProduct, insertProductSchema } from "@shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import type { z } from "zod";
 
 import {
   Table,
@@ -42,7 +43,7 @@ export default function Products() {
     queryKey: ["/api/products"],
   });
 
-  const form = useForm({
+  const form = useForm<InsertProduct>({
     resolver: zodResolver(insertProductSchema),
     defaultValues: {
       name: "",
@@ -51,7 +52,7 @@ export default function Products() {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: FormData) => {
+    mutationFn: async (data: InsertProduct) => {
       await apiRequest("POST", "/api/products", data);
     },
     onSuccess: () => {
@@ -63,7 +64,7 @@ export default function Products() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: FormData }) => {
+    mutationFn: async ({ id, data }: { id: number; data: InsertProduct }) => {
       await apiRequest("PUT", `/api/products/${id}`, data);
     },
     onSuccess: () => {
@@ -85,7 +86,7 @@ export default function Products() {
     },
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: InsertProduct) => {
     if (editingProduct) {
       await updateMutation.mutateAsync({ id: editingProduct.id, data });
     } else {

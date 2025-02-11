@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertReceiptSchema, type Product, type ReceiptItem } from "@shared/schema";
+import { insertReceiptSchema, type Product, type ReceiptItem, type InsertReceipt } from "@shared/schema";
 import { generatePDF } from "@/lib/pdf";
 
 import {
@@ -50,7 +50,7 @@ export default function NewReceipt() {
     queryKey: ["/api/products"],
   });
 
-  const form = useForm({
+  const form = useForm<InsertReceipt>({
     resolver: zodResolver(insertReceiptSchema),
     defaultValues: {
       clientName: "",
@@ -68,7 +68,7 @@ export default function NewReceipt() {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: FormData) => {
+    mutationFn: async (data: InsertReceipt) => {
       const response = await apiRequest("POST", "/api/receipts", data);
       return response.json();
     },
@@ -121,7 +121,7 @@ export default function NewReceipt() {
     form.setValue("items", items);
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: InsertReceipt) => {
     calculateTotals();
     await createMutation.mutateAsync(data);
   };
