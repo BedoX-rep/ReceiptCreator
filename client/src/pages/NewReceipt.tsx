@@ -414,31 +414,32 @@ export default function NewReceipt() {
 
               <div className="border-t pt-4">
                 <div className="space-y-2">
-                  <p className="text-lg">
-                    Subtotal: ${form.watch("subtotal") ? Number(form.watch("subtotal")).toFixed(2) : "0.00"}
-                  </p>
-                  {form.watch("discount") && (
-                    <p className="text-lg text-muted-foreground">
-                      After {form.watch("discount")}% Discount: $
-                      {(Number(form.watch("subtotal")) * (1 - Number(form.watch("discount")) / 100)).toFixed(2)}
-                    </p>
+                  {items.length > 0 && (
+                    <>
+                      {form.watch("discount") && (
+                        <p className="text-lg text-muted-foreground">
+                          After {form.watch("discount")}% Discount: $
+                          {(Number(form.watch("subtotal")) * (1 - Number(form.watch("discount")) / 100)).toFixed(2)}
+                        </p>
+                      )}
+                      {form.watch("numericalDiscount") && (
+                        <p className="text-lg text-muted-foreground">
+                          Additional Discount: ${Number(form.watch("numericalDiscount")).toFixed(2)}
+                        </p>
+                      )}
+                      <p className="text-xl font-bold">
+                        Total: ${Number(form.watch("total")).toFixed(2)}
+                      </p>
+                      {form.watch("advancePayment") > 0 && (
+                        <p className="text-lg text-muted-foreground">
+                          Advance Payment: ${Number(form.watch("advancePayment")).toFixed(2)}
+                        </p>
+                      )}
+                      <p className="text-lg font-semibold">
+                        Balance Due: ${Number(form.watch("balanceDue")).toFixed(2)}
+                      </p>
+                    </>
                   )}
-                  {form.watch("numericalDiscount") && (
-                    <p className="text-lg text-muted-foreground">
-                      Additional Discount: ${Number(form.watch("numericalDiscount")).toFixed(2)}
-                    </p>
-                  )}
-                  <p className="text-xl font-bold">
-                    Total: ${form.watch("total") ? Number(form.watch("total")).toFixed(2) : "0.00"}
-                  </p>
-                  {form.watch("advancePayment") && (
-                    <p className="text-lg text-muted-foreground">
-                      Advance Payment: ${Number(form.watch("advancePayment")).toFixed(2)}
-                    </p>
-                  )}
-                  <p className="text-lg font-semibold">
-                    Balance Due: ${form.watch("balanceDue") ? Number(form.watch("balanceDue")).toFixed(2) : "0.00"}
-                  </p>
                 </div>
               </div>
             </CardContent>
