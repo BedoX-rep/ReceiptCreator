@@ -83,7 +83,7 @@ export default function ReceiptHistory() {
           {receipts.map((receipt) => (
             <TableRow key={receipt.id}>
               <TableCell>
-                {format(new Date(receipt.date), "dd/MM/yyyy HH:mm")}
+                {receipt.date ? format(new Date(receipt.date), "dd/MM/yyyy HH:mm") : "N/A"}
               </TableCell>
               <TableCell>{receipt.clientName}</TableCell>
               <TableCell>${Number(receipt.total).toFixed(2)}</TableCell>
