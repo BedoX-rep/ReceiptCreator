@@ -108,6 +108,7 @@ export default function NewReceipt() {
 
   const calculateTotals = () => {
     const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+    form.setValue("subtotal", subtotal);
     const discount = Number(form.getValues("discount")) || 0;
     const numericalDiscount = Number(form.getValues("numericalDiscount")) || 0;
     const advancePayment = Number(form.getValues("advancePayment")) || 0;

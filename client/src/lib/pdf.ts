@@ -12,7 +12,7 @@ export function generatePDF(receipt: Receipt): string {
 
   doc.setFontSize(12);
   doc.text(`Receipt #${receipt.id}`, 20, 40);
-  doc.text(`Date: ${format(new Date(receipt.date), 'dd/MM/yyyy HH:mm')}`, 20, 50);
+  doc.text(`Date: ${format(receipt.date ? new Date(receipt.date) : new Date(), 'dd/MM/yyyy HH:mm')}`, 20, 50);
 
   // Client Info
   doc.text(`Client: ${receipt.clientName}`, 20, 70);
