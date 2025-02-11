@@ -97,15 +97,27 @@ export default function NewReceipt() {
       total: Number(product.price) * quantity,
     };
 
-    setItems([...items, newItem]);
+    const updatedItems = [...items, newItem];
+    setItems(updatedItems);
     setSelectedProduct("");
     setQuantity(1);
-    calculateTotals(); // Recalculate totals after adding an item
+    
+    const subtotal = updatedItems.reduce((sum, item) => sum + item.total, 0);
+    form.setValue("subtotal", subtotal);
+    form.setValue("total", subtotal);
+    form.setValue("balanceDue", subtotal);
+    form.setValue("items", updatedItems);
   };
 
   const removeItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
-    calculateTotals(); // Recalculate totals after removing an item
+    const updatedItems = items.filter((_, i) => i !== index);
+    setItems(updatedItems);
+    
+    const subtotal = updatedItems.reduce((sum, item) => sum + item.total, 0);
+    form.setValue("subtotal", subtotal);
+    form.setValue("total", subtotal);
+    form.setValue("balanceDue", subtotal);
+    form.setValue("items", updatedItems);
   };
 
   const calculateTotals = () => {
