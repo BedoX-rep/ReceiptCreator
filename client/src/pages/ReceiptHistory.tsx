@@ -120,10 +120,9 @@ export default function ReceiptHistory() {
                               <div>
                                 <h3 className="font-medium mb-2">Date</h3>
                                 <p>
-                                  {format(
-                                    new Date(selectedReceipt.date),
-                                    "dd/MM/yyyy HH:mm"
-                                  )}
+                                  {selectedReceipt.date 
+                                      ? format(new Date(selectedReceipt.date), "dd/MM/yyyy HH:mm")
+                                      : "N/A"}
                                 </p>
                               </div>
                             </div>
