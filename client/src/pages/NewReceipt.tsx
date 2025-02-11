@@ -100,15 +100,16 @@ export default function NewReceipt() {
     setItems([...items, newItem]);
     setSelectedProduct("");
     setQuantity(1);
+    calculateTotals(); // Recalculate totals after adding an item
   };
 
   const removeItem = (index: number) => {
     setItems(items.filter((_, i) => i !== index));
+    calculateTotals(); // Recalculate totals after removing an item
   };
 
   const calculateTotals = () => {
     const subtotal = items.reduce((sum, item) => sum + item.total, 0);
-    form.setValue("subtotal", subtotal);
     const discount = Number(form.getValues("discount")) || 0;
     const numericalDiscount = Number(form.getValues("numericalDiscount")) || 0;
     const advancePayment = Number(form.getValues("advancePayment")) || 0;
@@ -331,33 +332,6 @@ export default function NewReceipt() {
                   ))}
                 </TableBody>
               </Table>
-              <div className="mt-4 space-y-2 text-right">
-                <p className="text-lg">
-                  Subtotal: ${form.watch("subtotal").toFixed(2)}
-                </p>
-                {form.watch("discount") > 0 && (
-                  <p className="text-lg text-muted-foreground">
-                    After {form.watch("discount")}% Discount: $
-                    {(form.watch("subtotal") * (1 - form.watch("discount") / 100)).toFixed(2)}
-                  </p>
-                )}
-                {form.watch("numericalDiscount") > 0 && (
-                  <p className="text-lg text-muted-foreground">
-                    Additional Discount: ${form.watch("numericalDiscount").toFixed(2)}
-                  </p>
-                )}
-                <p className="text-xl font-bold">
-                  Total: ${form.watch("total").toFixed(2)}
-                </p>
-                {form.watch("advancePayment") > 0 && (
-                  <p className="text-lg text-muted-foreground">
-                    Advance Payment: ${form.watch("advancePayment").toFixed(2)}
-                  </p>
-                )}
-                <p className="text-lg font-semibold">
-                  Balance Due: ${form.watch("balanceDue").toFixed(2)}
-                </p>
-              </div>
             </CardContent>
           </Card>
 
@@ -365,76 +339,108 @@ export default function NewReceipt() {
             <CardHeader>
               <CardTitle>Payment Details</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="discount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Discount (%)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="0.01"
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(Number(e.target.value));
-                          calculateTotals();
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <CardContent className="space-y-6">
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="discount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Discount (%)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="0.01"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(Number(e.target.value));
+                            calculateTotals();
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="numericalDiscount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Additional Discount ($)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(Number(e.target.value));
-                          calculateTotals();
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="numericalDiscount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Additional Discount ($)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(Number(e.target.value));
+                            calculateTotals();
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="advancePayment"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Advance Payment</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(Number(e.target.value));
-                          calculateTotals();
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="advancePayment"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Advance Payment</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(Number(e.target.value));
+                            calculateTotals();
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="border-t pt-4">
+                <div className="space-y-2">
+                  <p className="text-lg">
+                    Subtotal: ${form.watch("subtotal") ? Number(form.watch("subtotal")).toFixed(2) : "0.00"}
+                  </p>
+                  {form.watch("discount") && (
+                    <p className="text-lg text-muted-foreground">
+                      After {form.watch("discount")}% Discount: $
+                      {(Number(form.watch("subtotal")) * (1 - Number(form.watch("discount")) / 100)).toFixed(2)}
+                    </p>
+                  )}
+                  {form.watch("numericalDiscount") && (
+                    <p className="text-lg text-muted-foreground">
+                      Additional Discount: ${Number(form.watch("numericalDiscount")).toFixed(2)}
+                    </p>
+                  )}
+                  <p className="text-xl font-bold">
+                    Total: ${form.watch("total") ? Number(form.watch("total")).toFixed(2) : "0.00"}
+                  </p>
+                  {form.watch("advancePayment") && (
+                    <p className="text-lg text-muted-foreground">
+                      Advance Payment: ${Number(form.watch("advancePayment")).toFixed(2)}
+                    </p>
+                  )}
+                  <p className="text-lg font-semibold">
+                    Balance Due: ${form.watch("balanceDue") ? Number(form.watch("balanceDue")).toFixed(2) : "0.00"}
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
