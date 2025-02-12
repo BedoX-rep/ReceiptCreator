@@ -39,6 +39,12 @@ export function registerRoutes(app: Express) {
     res.status(204).send();
   });
 
+  app.post('/api/products/:id/reorder', async (req, res) => {
+    const { direction } = req.body;
+    await storage.reorderProduct(Number(req.params.id), direction);
+    res.status(200).send();
+  });
+
   // Receipts API
   app.get('/api/receipts', async (req, res) => {
     const receipts = await storage.getReceipts();
