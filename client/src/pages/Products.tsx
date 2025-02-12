@@ -86,6 +86,19 @@ export default function Products() {
     },
   });
 
+  const reorderMutation = useMutation({
+    mutationFn: async ({ productId, direction }: { productId: number; direction: 'up' | 'down' }) => {
+      await apiRequest("POST", `/api/products/${productId}/reorder`, { direction });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+    },
+  });
+
+  const handleReorder = (productId: number, direction: 'up' | 'down') => {
+    reorderMutation.mutate({ productId, direction });
+  };
+
   const onSubmit = async (data: InsertProduct) => {
     if (editingProduct) {
       await updateMutation.mutateAsync({ id: editingProduct.id, data });
@@ -193,6 +206,22 @@ export default function Products() {
               <TableCell>{product.name}</TableCell>
               <TableCell>${Number(product.price).toFixed(2)}</TableCell>
               <TableCell className="text-right space-x-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handleReorder(product.id, 'up')}
+                  disabled={products.indexOf(product) === 0}
+                >
+                  ↑
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handleReorder(product.id, 'down')}
+                  disabled={products.indexOf(product) === products.length - 1}
+                >
+                  ↓
+                </Button>
                 <Button
                   variant="outline"
                   size="icon"

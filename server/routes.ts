@@ -35,8 +35,16 @@ export function registerRoutes(app: Express) {
   });
 
   app.delete('/api/products/:id', async (req, res) => {
-    await storage.deleteProduct(Number(req.params.id));
+    const id = Number(req.params.id);
+    await storage.deleteProduct(id);
     res.status(204).send();
+  });
+
+  app.post("/api/products/:id/reorder", async (req, res) => {
+    const id = Number(req.params.id);
+    const { direction } = req.body;
+    await storage.reorderProduct(id, direction);
+    res.status(200).send();
   });
 
   // Receipts API

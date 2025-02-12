@@ -76,6 +76,18 @@ export class JSONStorage implements IStorage {
     await fs.writeFile(this.productsPath, JSON.stringify(filtered));
   }
 
+  async reorderProduct(id: number, direction: 'up' | 'down'): Promise<void> {
+    const products = await this.getProducts();
+    const index = products.findIndex(p => p.id === id);
+    if (index === -1) return;
+    
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= products.length) return;
+    
+    [products[index], products[newIndex]] = [products[newIndex], products[index]];
+    await fs.writeFile(this.productsPath, JSON.stringify(products));
+  }
+
   async getReceipts(): Promise<Receipt[]> {
     const data = await fs.readFile(this.receiptsPath, 'utf-8');
     return JSON.parse(data);
