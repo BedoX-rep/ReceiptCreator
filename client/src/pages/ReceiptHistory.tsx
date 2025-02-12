@@ -44,10 +44,8 @@ export default function ReceiptHistory() {
     mutationFn: async (id: number) => {
       await apiRequest("DELETE", `/api/receipts/${id}`);
     },
-    onSuccess: (_, deletedId) => {
-      queryClient.setQueryData(["/api/receipts"], (old: Receipt[] | undefined) => 
-        old ? old.filter(receipt => receipt.id !== deletedId) : []
-      );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/receipts"] });
       toast({ title: "Receipt deleted successfully" });
     },
   });
